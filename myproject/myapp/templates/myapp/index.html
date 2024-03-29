@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crime Analysis Dashboard</title>
+</head>
+<body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #555;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin: 40px auto 20px;
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="date"],
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .prediction-result {
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+
+        .prediction-result h3 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .prediction-result p {
+            color: #555;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .heatmap-container {
+            margin: 40px auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 800px;
+            height: 600px;
+        }
+        .heatmap-container {
+            margin: 40px auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 800px;
+            height: 400px; /* Reduced heatmap height */
+        }
+    </style>
+        <h1>Crime Analysis Dashboard</h1>
+
+        <!-- Embed the heatmap -->
+        <div class="heatmap-container">{{ heatmap_html|safe }}</div>
+        
+        <!-- Embed the day distribution plot -->
+        <h2>Incidents by Day of the Week</h2>
+        <img src="data:image/png;base64,{{ day_distribution_img }}" />
+        
+        <!-- Similarly, add other visualizations -->
+        <h2>Incidents by Area</h2>
+        <img src="data:image/png;base64,{{ area_distribution_img }}" />
+        
+        <h2>Incidents by Time</h2>
+        <img src="data:image/png;base64,{{ time_distribution_img }}" />
+    
+        <h2>Incidents by Time Gap</h2>
+        <img src="data:image/png;base64,{{ time_intervals_distribution_img }}" />
+    
+        <form method="post" action="/myapp/">
+            {% csrf_token %}
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+            
+            <label for="area">Area:</label>
+            <select id="area" name="area">
+                <!-- Dynamically generate options based on available areas in your dataset -->
+                {% for area in areas %}
+                <option value="{{ area }}">{{ area }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="time_interval">Time Interval:</label>
+            <select id="time_interval" name="time_interval">
+                <!-- Options for time intervals -->
+                <option value="00:00-02:59">00:00-02:59</option>
+                <option value="03:00-05:59">03:00-05:59</option>
+                <!-- Add all time intervals here -->
+            </select>
+            
+            <button type="submit">Predict</button>
+        </form>
+    
+        {% if prediction_result %}
+        <div class="prediction-result">
+            <h3>Prediction Result:</h3>
+            <p>Estimated number of incidents: {{ prediction_result }}</p>
+        </div>
+        {% endif %}
+    
+        {% if heatmap_html %}
+        <h2>Predicted Incidents Heatmap</h2>
+        <div class="heatmap-container">{{ heatmap_html|safe }}</div>
+        {% endif %}
+    
+
+</body>
+</html>
