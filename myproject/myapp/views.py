@@ -258,7 +258,7 @@ def index(request):
         # Make predictions for all areas
         predictions = model.predict(prediction_input)
         prediction_result = model.predict(prediction_input)[0]
-        context.update({'prediction_result': {prediction_result}})
+        context.update({'prediction_result':f"crime prediction on {area} is {prediction_result} during {time_interval} on {date}"})
 
         
         # Create a DataFrame with predicted incidents for each area
