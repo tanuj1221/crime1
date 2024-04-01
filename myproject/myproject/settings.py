@@ -26,14 +26,14 @@ SECRET_KEY = "django-insecure-0l+fpd&z*tf!%bb7=nigpo^af-g0dd2sea$+lbg4+&ek9)ml1e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['13.201.37.88', '13.201.37.88:8000']
+ALLOWED_HOSTS = ['13.201.37.88', '13.201.37.88:8000','127.0.0.1']
 
 # settings.py
 
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / "static",
+    # '/var/www/static/',
 ]
 # Application definition
 
