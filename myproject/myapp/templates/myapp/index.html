@@ -23,10 +23,10 @@
                 <li class="nav-item"><a href="#heatmap"><i class="fas fa-file-alt"></i> Incidents Map</a></li>
                 <li class="nav-item"><a href="#"><i class="fas fa-file-alt"></i>Predicted Incidents Report</a></li>
       
-                <li class="nav-item"><a href="#"><i class="fas fa-history"></i> Incident per area</a></li>
+                <li class="nav-item"><a href="#total-incidents-card"><i class="fas fa-history"></i> Incident per area</a></li>
                 <li class="nav-item"><a href="#heatmap"><i class="fas fa-building"></i> Sites</a></li>
 
-                <li class="nav-item"><a href="#"><i class="fas fa-th-large"></i> Incident by Time</a></li>
+                <li class="nav-item"><a href="#incident-chart-card"><i class="fas fa-th-large"></i> Incident by Time</a></li>
                 <li class="nav-item"><a href="#" id="upload-trigger"><i class="fas fa-road"></i> Upload data</a></li>
                 <!-- Hidden file input -->
                 <input type="file" id="file-upload" name="file" style="display: none;">
@@ -136,12 +136,12 @@
         <main class="dashboard">
             <section class="card" id="incident-by-day">
                 <!-- Embed the day distribution plot -->
-                <h2>Incidents by Day of the Week</h2>
+                <h2>Incidents by Day of the Area</h2>
                 <img src="data:image/png;base64,{{ day_distribution_img }}" />
             </section>
 
             <section class="card" id="total-incidents-card">
-                <h2>Incidents by Area</h2>
+                <h2>Incidents by Week</h2>
                 <img src="data:image/png;base64,{{ area_distribution_img }}" />
             </section>
 
