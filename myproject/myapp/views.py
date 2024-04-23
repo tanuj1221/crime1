@@ -51,22 +51,23 @@ def index(request):
 def file_upload(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
+        print(request.FILES)
         if form.is_valid():
             uploaded_file = request.FILES['file']
-            save_path = './main1.csv'
+            save_path = './main12.xlsx'  # Use the desired file name
             if os.path.exists(save_path):
                 os.remove(save_path)
             with open(save_path, 'wb+') as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
-            # Return a JSON response indicating success
-            return JsonResponse({"message": "CSV is uploaded."})
+            # Redirect to the index view to reload the page
+            return redirect('index')  # Make sure 'index' is the name of your URL pattern for the index view
     # If the request is not POST or form is not valid, return an error message
     return JsonResponse({"error": "Failed to upload."}, status=400)
 
 
 def load_and_prepare_data(file_path):
-    data = pd.read_csv(file_path)
+    data = pd.read_excel(file_path)
     
     # Handling mixed date formats
     data['DATE'] = pd.to_datetime(data['DATE'], errors='coerce', dayfirst=True)
@@ -342,12 +343,42 @@ def plot_time_intervals_distribution(data):
     plt.close()  # Close the plot to free memory
     return graph
 
+from django.shortcuts import render, redirect
 
+from sklearn.linear_model import ElasticNet
 def index(request):
-    file_path = "./main1.csv"  # Update as necessary
+
+    if request.method == "POST":
+        # Check if the POST request has a file
+        if 'file' in request.FILES:
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                uploaded_file = request.FILES['file']
+                temp_save_path = './temp_uploaded_file.xlsx'  # Temporary save path for the uploaded file
+                final_save_path = './main12.xlsx'  # The final desired path for the file
+
+                # Save the uploaded file temporarily
+                with open(temp_save_path, 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
+
+                # Replace the existing file with the uploaded one
+                os.replace(temp_save_path, final_save_path)
+            # Proceed with further processing
+
+                # Option 1: Redirect to index to refresh the page with the new data
+                return redirect('index')  # Make sure 'index' is the name of your URL pattern for this view
+                # Option 2: Return a JSON response and handle the page update via JavaScript
+                # return JsonResponse({"message": "File successfully uploaded."})
+            else:
+                return JsonResponse({"error": "Failed to upload file."}, status=400)
+    file_path = "./main12.xlsx"  # Update as necessary
     data = load_and_prepare_data(file_path)
     daily_incident_counts = data.groupby(['DATE', 'AREA']).size().reset_index(name='DAILY_INCIDENT_COUNT')
+   
     data = pd.merge(data, daily_incident_counts, on=['DATE', 'AREA'], how='left')
+    print(data[['DATE', 'AREA','DAILY_INCIDENT_COUNT']])
+    data[['DATE', 'AREA','DAILY_INCIDENT_COUNT']].to_csv('main.csv')
    
     
     # Generate visualizations
@@ -415,9 +446,10 @@ def index(request):
         
             
             # Train the model
+            from sklearn.neighbors import KNeighborsRegressor
             X = data[['DATE', 'AREA_ENCODED', 'TIME_INTERVAL_ENCODED']]
             y = data['DAILY_INCIDENT_COUNT']
-            model = RandomForestRegressor(n_estimators=100, random_state=42)
+            model =KNeighborsRegressor()
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
             model.fit(X_train, y_train)
             interval_order = ['00:00-02:59', '03:00-05:59', '06:00-08:59', '09:00-11:59',

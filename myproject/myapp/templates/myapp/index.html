@@ -13,7 +13,7 @@
         <aside class="navigation">
             <div class="nav-header">
                 <div class="nav-header-logo">
-                    <img src="../../static/images/download.png" alt="">
+                    <img src="../../static/images/Logo.png" alt="">
                 </div>
                 OPTIONS
             </div>
@@ -23,10 +23,10 @@
                 <li class="nav-item"><a href="#heatmap"><i class="fas fa-file-alt"></i> Incidents Map</a></li>
                 <li class="nav-item"><a href="#"><i class="fas fa-file-alt"></i>Predicted Incidents Report</a></li>
       
-                <li class="nav-item"><a href="#total-incidents-card"><i class="fas fa-history"></i> Incident per area</a></li>
+                <li class="nav-item"><a href="#"><i class="fas fa-history"></i> Incident per area</a></li>
                 <li class="nav-item"><a href="#heatmap"><i class="fas fa-building"></i> Sites</a></li>
 
-                <li class="nav-item"><a href="#incident-chart-card"><i class="fas fa-th-large"></i> Incident by Time</a></li>
+                <li class="nav-item"><a href="#"><i class="fas fa-th-large"></i> Incident by Time</a></li>
                 <li class="nav-item"><a href="#" id="upload-trigger"><i class="fas fa-road"></i> Upload data</a></li>
                 <!-- Hidden file input -->
                 <input type="file" id="file-upload" name="file" style="display: none;">
@@ -39,7 +39,7 @@
         <header class="header">
             <div class="header-content">
                 <div class="logo-container">
-                    <img src="../../static/images/download.png" alt="Company Logo" class="header-logo">
+                    <img src="../../static/images/Logo.jpeg" alt="Company Logo" class="header-logo">
                 </div>
         
                 <div class="header-title">
@@ -136,12 +136,12 @@
         <main class="dashboard">
             <section class="card" id="incident-by-day">
                 <!-- Embed the day distribution plot -->
-                <h2>Incidents by Day of the Area</h2>
+                <h2>Incidents by Day of the Week</h2>
                 <img src="data:image/png;base64,{{ day_distribution_img }}" />
             </section>
 
             <section class="card" id="total-incidents-card">
-                <h2>Incidents by Week</h2>
+                <h2>Incidents by Area</h2>
                 <img src="data:image/png;base64,{{ area_distribution_img }}" />
             </section>
 
@@ -209,41 +209,39 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
     <script>
-        document.getElementById('upload-trigger').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('file-upload').click();
-        });
-        
-        document.getElementById('file-upload').addEventListener('change', function() {
-            var file = this.files[0];
-            if (file) {
-                var formData = new FormData();
-                formData.append('file', file);
-                
-                // CSRF token needed for Django
-                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                formData.append('csrfmiddlewaretoken', csrftoken);
-        
-                fetch('/upload/', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin', // Needed for including CSRF token
-                    headers: {"X-CSRFToken": csrftoken},
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Popup message on success
-                    alert("CSV is uploaded.");
-                    // Optionally, update some element to show a success message
-                    document.getElementById('upload-message').innerText = "CSV is uploaded.";
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    alert("There was an error uploading the file.");
-                });
-            }
-        });
-        </script>
+      document.getElementById('upload-trigger').addEventListener('click', function(e) {
+          e.preventDefault();
+          document.getElementById('file-upload').click();
+      });
+      
+      document.getElementById('file-upload').addEventListener('change', function() {
+          var file = this.files[0];
+          if (file) {
+              var formData = new FormData();
+              formData.append('file', file);
+              
+              // CSRF token needed for Django
+              const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+              formData.append('csrfmiddlewaretoken', csrftoken);
+              fetch('{% url "file_upload" %}', {  // Use the appropriate URL name for the file_upload view
+                  method: 'POST',
+                  body: formData,
+                  credentials: 'same-origin'
+              })
+              .then(response => {
+                  if (response.redirected) {
+                      window.location.href = response.url;  // Redirect to the index page
+                  } else {
+                      throw new Error('Upload failed');
+                  }
+              })
+              .catch((error) => {
+                  console.log('Error:', error);
+                  alert("There was an error uploading the file.");
+              });
+          }
+      });
+  </script>
 
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
