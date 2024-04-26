@@ -32,7 +32,7 @@ def login_view(request):
 
         # This is a simplistic check. In a real application, you should use Django's
         # authentication system to handle passwords securely.
-        if email == 'admin@com' and password == 'march1221':
+        if email == 'admin@hpsholdings.co.za' and password == 'HPSadmnacc2024':
             # If the login is successful, redirect to the index page.
             return HttpResponseRedirect(reverse('index'))
         else:
